@@ -39,9 +39,14 @@ public class AdminRestController {
 		return deptRepo.findBydeptName(dept).getEmpList();
 	}
 	
-	@GetMapping("emps/{last}")
-	public List<Employee> getByLastName(@PathVariable("last")String last) {
-		return empRepo.findAllBylastName(last);
+	@GetMapping("/emp/dept/{id}")
+	public String getFromDpt(@PathVariable("id")Long id) {
+		return empRepo.findById(id).orElse(null).getDept().getDeptName();
+	}
+	
+	@GetMapping("emps/{lname}")
+	public List<Employee> getByLastName(@PathVariable("lname")String lname) {
+		return empRepo.findAllBylastName(lname);
 	}
 
 	
