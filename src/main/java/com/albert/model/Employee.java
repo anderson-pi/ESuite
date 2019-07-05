@@ -7,7 +7,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.Email;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -20,28 +19,27 @@ public class Employee {
 	private Long empId;
 	private String firstName;
 	private String lastName;
-	@Email
-	private String eMail; //valid email
 	private String contactNo;
+	private String role;
 	@ManyToOne
 	@JoinColumn(name="dept_id")
 	private Department dept; //foreignKey , 
 	
 	public Employee() {}
-	public Employee(Long empId, String firstName, String lastName, String eMail, String contactNo, Department dept) {
+	public Employee(Long empId, String firstName, String lastName, String contactNo, String role, Department dept) {
 		super();
 		this.empId = empId;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.eMail = eMail;
 		this.contactNo = contactNo;
+		this.role=role;
 		this.dept = dept;
+	}
+	public void setEmpId(long empId) {
+		this.empId=empId;
 	}
 	public Long getEmpId() {
 		return empId;
-	}
-	public void setEmpId(Long empId) {
-		this.empId = empId;
 	}
 	public String getFirstName() {
 		return firstName;
@@ -55,12 +53,6 @@ public class Employee {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	public String geteMail() {
-		return eMail;
-	}
-	public void seteMail(String eMail) {
-		this.eMail = eMail;
-	}
 	public String getContactNo() {
 		return contactNo;
 	}
@@ -73,6 +65,12 @@ public class Employee {
 	@JsonIgnore
 	public void setDept(Department dept) {
 		this.dept = dept;
+	}
+	public String getRole() {
+		return role;
+	}
+	public void setRole(String role) {
+		this.role = role;
 	}
 	
 	
