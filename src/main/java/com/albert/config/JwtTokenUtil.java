@@ -44,7 +44,7 @@ public class JwtTokenUtil implements Serializable {
 	public Date getExpirationDateFromToken(String token) {
 		return getClaimFromToken(token, Claims::getExpiration);
 	}
-	
+	//returns the role of employee
 	public String getRole(String token) {
 		Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody(); 
 		return (String)claims.get("role");

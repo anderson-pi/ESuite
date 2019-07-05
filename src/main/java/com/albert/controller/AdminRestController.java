@@ -43,13 +43,13 @@ public class AdminRestController {
 
 
 	// get all employees
-	@GetMapping("/emp")
+	@GetMapping("/emps")
 	public Iterable<Employee> getAllEmp() {
 		return empRepo.findAll();
 	}
 
 	// get all departments
-	@GetMapping("/dept")
+	@GetMapping("/depts")
 	public Iterable<Department> getAllDpt() {
 		return deptRepo.findAll();
 	}
@@ -81,17 +81,6 @@ public class AdminRestController {
 			return empRepo.save(emp);
 		}
 		return new Employee();
-	}
-
-	// Setup Employee Login
-	@PostMapping("/setLogin/{id}")
-	public UserLogin createEmp(@RequestBody UserLogin login, @PathVariable Long id) {
-		Employee tempEmp = empRepo.findById(id).orElse(null);
-		if (tempEmp != null) {
-			login.setEmpId(tempEmp);
-			return userRepo.save(login);
-		}
-		return new UserLogin();
 	}
 
 	// create a department
