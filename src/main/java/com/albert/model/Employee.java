@@ -6,6 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
@@ -20,8 +21,11 @@ public class Employee {
 	private String firstName;
 	private String lastName;
 	private String contactNo;
-	private String role;
-	@ManyToOne
+	@OneToOne
+	@JsonIgnore
+	private UserLogin userLogin;
+	@OneToOne
+	@JsonIgnore
 	@JoinColumn(name="dept_id")
 	private Department dept; //foreignKey , 
 	
@@ -32,7 +36,6 @@ public class Employee {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.contactNo = contactNo;
-		this.role=role;
 		this.dept = dept;
 	}
 	public void setEmpId(long empId) {
@@ -62,15 +65,14 @@ public class Employee {
 	public Department getDept() {
 		return dept;
 	}
-	@JsonIgnore
 	public void setDept(Department dept) {
 		this.dept = dept;
 	}
-	public String getRole() {
-		return role;
+	public UserLogin getUserLogin() {
+		return userLogin;
 	}
-	public void setRole(String role) {
-		this.role = role;
+	public void setUserLogin(UserLogin userLogin) {
+		this.userLogin = userLogin;
 	}
 	
 	

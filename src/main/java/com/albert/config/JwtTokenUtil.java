@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import com.albert.dao.EmployeeRepo;
 import com.albert.dao.UserLoginRepo;
-import com.albert.model.Employee;
 import com.albert.model.UserLogin;
 
 import io.jsonwebtoken.Claims;
@@ -69,8 +67,7 @@ public class JwtTokenUtil implements Serializable {
 	public String generateToken(UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
 		UserLogin tempUser = userRepo.findByuserNameAndPassWord(userDetails.getUsername(), userDetails.getPassword());
-		Employee tempEmp = empRepo.findById(tempUser.getEmpId().getEmpId()).orElse(null);
-		claims.put("role", tempEmp.getRole()); 
+		claims.put("role", tempUser.getRole()); 
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
 

@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.albert.config.JwtTokenUtil;
 import com.albert.model.DTOUserLogin;
+import com.albert.model.Employee;
 import com.albert.model.JwtRequest;
 import com.albert.model.JwtResponse;
 import com.albert.service.JwtUserDetailsService;
+import com.albert.service.EmployeeMailSender;
 
 @RestController
 @CrossOrigin
@@ -27,6 +29,8 @@ public class JwtController {
 	private JwtTokenUtil jwtTokenUtil;
 	@Autowired
 	private JwtUserDetailsService userDetailsService;
+	@Autowired
+	private EmployeeMailSender send;
 	
 	@PostMapping("/auth")
 	public ResponseEntity<?> authEmpJwt(@RequestBody JwtRequest authenticationRequest) throws Exception {
@@ -41,7 +45,14 @@ public class JwtController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<?> regEmpJwt(@RequestBody DTOUserLogin authenticationRequest) throws Exception {
-		return ResponseEntity.ok(userDetailsService.save(authenticationRequest));
+		Employee emp = userDetailsService.save(authenticationRequest);
+		return ResponseEntity.ok(send.sendingMail(emp.getUserLogin().getUserName(),"Welcome on-Board " + emp.getFirstName().toUpperCase() + " " +
+				emp.getLastName().toUpperCase(),"Welcome to on-Board into E-office Corp.\n" + 
+						"Welcome " + emp.getFirstName().toUpperCase() +", your details as below:\n\n" +
+						"EmpId: " + emp.getEmpId() +"\n"+
+						"LoginId: "+ emp.getUserLogin().getUserName()+ "\n" +
+						"Password: "+ authenticationRequest.getPassWord() + 
+						"\n\nRegards\n" + "Admin Team\n" + "E-office Corp.\n"));
 	}
 	
 	private void authenticate(String username, String password) throws Exception {

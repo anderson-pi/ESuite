@@ -15,8 +15,7 @@ public class Department {
 	@Id @GeneratedValue(strategy= GenerationType.SEQUENCE)
 	private Long deptId;
 	private String deptName;
-	@OneToMany(cascade = CascadeType.ALL,mappedBy="dept")
-	List<Employee> empList= new ArrayList<>();;
+	
 	
 	public Department() {}
 	public Department(Long deptId, String deptName) {
@@ -38,12 +37,7 @@ public class Department {
 	public void setDeptName(String deptName) {
 		this.deptName = deptName;
 	}
-	public List<Employee> getEmpList() {
-		return empList;
-	}
-	public void setEmpList(List<Employee> empList) {
-		this.empList = empList;
-	}
+	
 	
 	
 

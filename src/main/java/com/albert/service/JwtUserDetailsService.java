@@ -3,7 +3,6 @@ package com.albert.service;
 import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -38,14 +37,16 @@ public class JwtUserDetailsService implements UserDetailsService {
 				new ArrayList<>());
 	}
 
-	public UserLogin save(DTOUserLogin user) {
+	public Employee save(DTOUserLogin user) {
 		Employee tempEmp = empRepo.findById(user.getId()).orElse(null);
 		if (tempEmp != null) {
 			UserLogin newUser = new UserLogin();
 			newUser.setUserName(user.getUserName());
 			newUser.setPassWord(bcryptEncoder.encode(user.getPassWord()));
-			newUser.setEmpId(tempEmp);
-			return userRepo.save(newUser);
+			newUser.setRole(user.getRole());
+			tempEmp.setUserLogin(newUser);
+			userRepo.save(newUser);
+			return empRepo.save(tempEmp);
 		}
 		return null;
 	}

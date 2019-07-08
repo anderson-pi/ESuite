@@ -4,18 +4,16 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 
 @Entity
 public class UserLogin {
 	@Id @GeneratedValue(strategy=GenerationType.AUTO)
-	private Long uLohId;
+	private Long userId;
 	@Email
 	private String userName;
 	private String passWord;
-	@OneToOne
-	private Employee empId;
+	private String role;
 	
 	public UserLogin(){}
 	
@@ -25,7 +23,6 @@ public class UserLogin {
 		super();
 		this.userName = eMail;
 		this.passWord = password;
-		this.empId=empId;
 	}
 
 
@@ -52,23 +49,22 @@ public class UserLogin {
 	}
 
 
-
-	public Employee getEmpId() {
-		return empId;
+	public Long getUserId() {
+		return userId;
 	}
 
 
 
-	public void setEmpId(Employee empId) {
-		this.empId = empId;
+	public String getRole() {
+		return role;
 	}
 
 
 
-	public Long getuLohId() {
-		return uLohId;
+	public void setRole(String role) {
+		this.role = role;
 	}
-
+	
 	
 	
 	
