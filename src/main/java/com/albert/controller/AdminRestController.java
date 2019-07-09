@@ -1,7 +1,12 @@
 package com.albert.controller;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +28,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.albert.dao.DeptRepo;
 import com.albert.dao.EmployeeRepo;
+import com.albert.dao.MeetingRoomRepo;
+import com.albert.dao.MeetingRoomRequestRepo;
 import com.albert.dao.TaskRepo;
+import com.albert.dao.TrainingRoomRepo;
+import com.albert.dao.TrainingRoomRequestRepo;
 import com.albert.dao.UserLoginRepo;
-import com.albert.model.DTOUserLogin;
 import com.albert.model.Department;
 import com.albert.model.Employee;
-import com.albert.model.UserLogin;
-import com.albert.service.JwtUserDetailsService;
+import com.albert.model.MeetingRoom;
+import com.albert.model.MeetingRoomRequest;
 import com.albert.service.EmployeeMailSender;
-import com.albert.model.JwtResponse;
 import com.albert.model.Task;
-import com.albert.model.JwtRequest;
-import com.albert.config.JwtTokenUtil;
+import com.albert.model.TrainingRoom;
+import com.albert.model.TrainingRoomRequest;
 
 @RestController
 @RequestMapping("admin")
@@ -50,6 +57,14 @@ public class AdminRestController {
 	TaskRepo taskRepo;
 	@Autowired
 	EmployeeMailSender sender;
+	@Autowired
+	TrainingRoomRequestRepo trainReqRepo;
+	@Autowired
+	TrainingRoomRepo trainingRoomRepo;
+	@Autowired
+	MeetingRoomRepo meetingRoomRepo;
+	@Autowired
+	MeetingRoomRequestRepo meetingReqRepo;
 
 
 
@@ -158,5 +173,80 @@ public class AdminRestController {
 		return ("Deleted Employee ID: " + id);
 	}
 	
+	//Deny training room request
+	@DeleteMapping("denyTrainingRoom/{requestId}")
+	public String denyTrainingRoomRequest(@PathVariable Long requestId) {
+		TrainingRoomRequest tempRequest = trainReqRepo.findById(requestId).orElse(null);
+		trainReqRepo.deleteById(requestId);
+		sender.sendingMail(tempRequest.getEmpId().getUserLogin().getUserName(), "Training Room Request Notification", "Request Id: " + tempRequest.getRequestId()
+		+ "\nDescription: " + tempRequest.getRoomDesc() + "\n Start Date: " + tempRequest.getStartDate() 
+		+ "\nEnd Date: " + tempRequest.getEndDate() + "\nThis request has been denied!\n\nThank you,\nAdmin");
+		return ("Denied training room request: "+requestId);
+	}
+	@PutMapping("acceptTrainingRoom/{requestId}")
+	public String acceptTrainingRoomRequest(@PathVariable Long requestId) {
+		TrainingRoomRequest tempRequest = trainReqRepo.findById(requestId).orElse(null);
+		TrainingRoom tempRoom = trainingRoomRepo.findById(tempRequest.getTrainingRoomId()).orElseThrow(null);
+		LocalDate tempDate= tempRequest.getStartDate();
+		while (!tempDate.equals(tempRequest.getEndDate().plusDays(1))) {
+			tempRoom.getReservedDates().add(tempDate);
+			tempDate = tempDate.plusDays(1);
+		}
+		trainingRoomRepo.save(tempRoom);
+		return sender.sendingMail(tempRequest.getEmpId().getUserLogin().getUserName(), "Training Room Request Notification", "Request Id: " + tempRequest.getRequestId()
+		+ "\nDescription: " + tempRequest.getRoomDesc() + "\n Start Date: " + tempRequest.getStartDate() 
+		+ "\nEnd Date: " + tempRequest.getEndDate() + "\nThis request has been approved!\n\nThank you,\nAdmin");
+		
+	}
+	@PostMapping("/createTrainingRoom")
+	public TrainingRoom createTrainingRoom(@RequestBody TrainingRoom tRoom) {
+		return trainingRoomRepo.save(tRoom);
+	}
+	@PostMapping("/createMeetingRoom")
+	public MeetingRoom createTrainingRoom(@RequestBody MeetingRoom tRoom) {
+		return meetingRoomRepo.save(tRoom);
+	}
+	@DeleteMapping("denyMeetingRoom/{requestId}")
+	public String denyMeetingRoomRequest(@PathVariable Long requestId) {
+		MeetingRoomRequest tempRequest = meetingReqRepo.findById(requestId).orElse(null);
+		meetingReqRepo.deleteById(requestId);
+		sender.sendingMail(tempRequest.getEmpId().getUserLogin().getUserName(), "Training Room Request Notification", "Request Id: " + tempRequest.getRequestId()
+		+ "\nDescription: " + tempRequest.getMeetingDesc() + "\nStart Time: " + tempRequest.getStartTime() 
+		+ "\nEnd Time: " +tempRequest.getEndTime()+ "\nThis request has been denied!\n\nThank you,\nAdmin");
+		return ("Denied meeting room request: "+requestId);
+	}
+	@PutMapping("/acceptMeetingRoom/{requestId}")
+	public String acceptMeetingRoomRequest(@PathVariable Long requestId) {
+		MeetingRoomRequest tempRequest = meetingReqRepo.findById(requestId).orElse(null);
+		MeetingRoom tempRoom = meetingRoomRepo.findById(tempRequest.getMeetingRoomId()).orElseThrow(null);
+		
+		LocalTime timeStart = tempRequest.getStartTime().toLocalDateTime().toLocalTime();
+		LocalDate date = tempRequest.getStartTime().toLocalDateTime().toLocalDate();
+		
+		int stHour= tempRequest.getStartTime().getHours();
+		int edHour= tempRequest.getEndTime().getHours();
+		int index = Math.abs(stHour - edHour);
+		Set<LocalTime> time = tempRoom.getReserved().getOrDefault(date, new HashSet<>());
+		
+		for(int i=0; i<index+1; i++) {
+			time.add(timeStart.plusHours(i));
+		}
+		tempRoom.getReserved().put(date, time);
+		meetingRoomRepo.save(tempRoom);
+		return sender.sendingMail(tempRequest.getEmpId().getUserLogin().getUserName(), "Meeting Room Request Notification", "Request Id: " + tempRequest.getRequestId()
+		+ "\nDescription: " + tempRequest.getMeetingDesc() + "\n Start Date: " + tempRequest.getStartTime()
+		+ "\nEnd Date: " + tempRequest.getEndTime() + "\nThis request has been approved!\n\nThank you,\nAdmin");
+		
+	}
+	@GetMapping("/viewMeetings")
+	public String viewMeetingRequest() {
+		
+		return meetingRoomRepo.findAll().toString();
+	}
+	@GetMapping("/viewTrainings")
+	public String viewTrainingRequest() {
+		
+		return trainingRoomRepo.findAll().toString();
+	}
 
 }
