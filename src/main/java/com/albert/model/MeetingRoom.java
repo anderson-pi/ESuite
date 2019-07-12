@@ -1,6 +1,5 @@
 package com.albert.model;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;

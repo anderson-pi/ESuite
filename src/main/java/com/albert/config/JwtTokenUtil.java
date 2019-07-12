@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import com.albert.dao.EmployeeRepo;
 import com.albert.dao.UserLoginRepo;
-import com.albert.model.UserLogin;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -66,8 +65,6 @@ public class JwtTokenUtil implements Serializable {
 	//generate token for user
 	public String generateToken(UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
-		UserLogin tempUser = userRepo.findByuserNameAndPassWord(userDetails.getUsername(), userDetails.getPassword());
-		claims.put("role", tempUser.getRole()); 
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
 

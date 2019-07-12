@@ -6,57 +6,70 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
-public class TrainingRoomRequest {
+public class LeaveRequest {
 	@Id @GeneratedValue(strategy=GenerationType.SEQUENCE)
-	private Long requestId;
-	private Long trainingRoomId;
+	private Long leaveId;
+	private String leaveType;
 	private LocalDate startDate;
 	private LocalDate endDate;
-	private String roomDesc;
-	@OneToOne()
-	@JoinColumn(name="emp_id")
+	private String reason;
+	@OneToOne
 	private Employee empId;
 	
-	public TrainingRoomRequest(){}
-	
-	public TrainingRoomRequest(DTOTrainingRoomRequest dto){
-		this.trainingRoomId = dto.getTrainingRoomId();
+	public LeaveRequest(){}
+
+	public LeaveRequest(String leaveType, LocalDate startDate, LocalDate endDate, String reason) {
+		super();
+		this.leaveType = leaveType;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.reason = reason;
+	}
+	public LeaveRequest(DTOLeaveRequest dto) {
+		super();
+		this.leaveType = dto.getLeaveType();
 		this.startDate = LocalDate.parse(dto.getStartDate());
-		this.endDate =LocalDate.parse(dto.getEndDate());
-		this.roomDesc= dto.getRoomDesc();
+		this.endDate = LocalDate.parse(dto.getEndDate());
+		this.reason = dto.getReason();
 	}
-	
-	public Long getTrainingRoomId() {
-		return trainingRoomId;
+
+	public String getLeaveType() {
+		return leaveType;
 	}
-	public void setTrainingRoomId(Long trainingRoomId) {
-		this.trainingRoomId = trainingRoomId;
+
+	public void setLeaveType(String leaveType) {
+		this.leaveType = leaveType;
 	}
+
 	public LocalDate getStartDate() {
 		return startDate;
 	}
+
 	public void setStartDate(LocalDate startDate) {
 		this.startDate = startDate;
 	}
+
 	public LocalDate getEndDate() {
 		return endDate;
 	}
+
 	public void setEndDate(LocalDate endDate) {
 		this.endDate = endDate;
 	}
-	public String getRoomDesc() {
-		return roomDesc;
-	}
-	public void setRoomDesc(String roomDesc) {
-		this.roomDesc = roomDesc;
+
+	public String getReason() {
+		return reason;
 	}
 
-	public Long getRequestId() {
-		return requestId;
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public Long getLeaveId() {
+		return leaveId;
 	}
 
 	public Employee getEmpId() {

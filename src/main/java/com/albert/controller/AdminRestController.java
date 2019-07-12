@@ -1,6 +1,5 @@
 package com.albert.controller;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -8,15 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.albert.dao.DeptRepo;
+import com.albert.dao.EmployeeLeavesRepo;
 import com.albert.dao.EmployeeRepo;
+import com.albert.dao.LeaveRequestRepo;
 import com.albert.dao.MeetingRoomRepo;
 import com.albert.dao.MeetingRoomRequestRepo;
 import com.albert.dao.TaskRepo;
@@ -36,6 +29,8 @@ import com.albert.dao.TrainingRoomRequestRepo;
 import com.albert.dao.UserLoginRepo;
 import com.albert.model.Department;
 import com.albert.model.Employee;
+import com.albert.model.EmployeeLeaves;
+import com.albert.model.LeaveRequest;
 import com.albert.model.MeetingRoom;
 import com.albert.model.MeetingRoomRequest;
 import com.albert.service.EmployeeMailSender;
@@ -65,8 +60,10 @@ public class AdminRestController {
 	MeetingRoomRepo meetingRoomRepo;
 	@Autowired
 	MeetingRoomRequestRepo meetingReqRepo;
-
-
+	@Autowired
+	LeaveRequestRepo leaveReqRepo;
+	@Autowired
+	EmployeeLeavesRepo empLeavesRepo;
 
 	// get all employees
 	@GetMapping("/emps")
@@ -239,14 +236,51 @@ public class AdminRestController {
 		
 	}
 	@GetMapping("/viewMeetings")
-	public String viewMeetingRequest() {
+	public Iterable<MeetingRoom> viewMeetings() {
 		
-		return meetingRoomRepo.findAll().toString();
+		return meetingRoomRepo.findAll();
 	}
 	@GetMapping("/viewTrainings")
-	public String viewTrainingRequest() {
+	public Iterable<TrainingRoom> viewTrainings() {
 		
-		return trainingRoomRepo.findAll().toString();
+		return trainingRoomRepo.findAll();
+	}
+	
+	@GetMapping("/viewTrainingRequest")
+	public Iterable<TrainingRoomRequest> viewTrainingRequest() {
+		
+		return trainReqRepo.findAll();
+	}
+	@GetMapping("/viewMeetingRequest")
+	public Iterable<MeetingRoomRequest> viewMeetingRequest() {
+		
+		return meetingReqRepo.findAll();
+	}
+	
+	@GetMapping("/viewLeaveRequest")
+	public Iterable<LeaveRequest> viewLeaveRequest() {
+		
+		return leaveReqRepo.findAll();
+	}
+	@PostMapping("acceptLeave/{requestId}")
+	public String acceptLeaveRequest(@PathVariable Long requestId) {
+		EmployeeLeaves acceptedRequest = new EmployeeLeaves(leaveReqRepo.findById(requestId).orElseThrow(null));
+		empLeavesRepo.save(acceptedRequest);
+
+		return sender.sendingMail(acceptedRequest.getEmpId().getUserLogin().getUserName(), "Leave Request Notification", "Request Id: " + acceptedRequest.getLeaveId()
+		+ "\n Start Date: " + acceptedRequest.getStartDate() 
+		+ "\nEnd Date: " + acceptedRequest.getEndDate() + "\nThis request has been approved!\n\nThank you,\nAdmin");
+		
+	}
+	@PostMapping("denyLeave/{requestId}")
+	public String denyLeaveRequest(@PathVariable Long requestId) {
+		EmployeeLeaves deniedRequest = new EmployeeLeaves(leaveReqRepo.findById(requestId).orElseThrow(null));
+		leaveReqRepo.deleteById(requestId);
+
+		return sender.sendingMail(deniedRequest.getEmpId().getUserLogin().getUserName(), "Leave Request Notification", "Request Id: " + deniedRequest.getLeaveId()
+		+ "\n Start Date: " + deniedRequest.getStartDate() 
+		+ "\nEnd Date: " + deniedRequest.getEndDate() + "\nThis request has been approved!\n\nThank you,\nAdmin");
+		
 	}
 
 }

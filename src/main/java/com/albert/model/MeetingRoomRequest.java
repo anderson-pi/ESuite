@@ -1,9 +1,6 @@
 package com.albert.model;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,8 +25,8 @@ public class MeetingRoomRequest {
 	
 	public MeetingRoomRequest(DTOMeetingRoom dto) {
 		this.MeetingRoomId = dto.getRoomId();
-		this.startTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getStartTime());
-		this.endTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getEndTime());
+		this.startTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getStartTime()+":00");
+		this.endTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getEndTime()+":00");
 		this.meetingDesc=dto.getMeetingDesc();
 	}
 

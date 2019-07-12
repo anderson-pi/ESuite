@@ -1,14 +1,10 @@
 package com.albert.controller;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,15 +14,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.albert.dao.EmployeeRepo;
+import com.albert.dao.LeaveRequestRepo;
 import com.albert.dao.MeetingRoomRepo;
 import com.albert.dao.MeetingRoomRequestRepo;
 import com.albert.dao.TaskRepo;
 import com.albert.dao.TrainingRoomRequestRepo;
 import com.albert.dao.UserLoginRepo;
+import com.albert.model.DTOLeaveRequest;
 import com.albert.model.DTOMeetingRoom;
 import com.albert.model.DTOTrainingRoomRequest;
 import com.albert.model.Employee;
-import com.albert.model.MeetingRoom;
+import com.albert.model.LeaveRequest;
 import com.albert.model.MeetingRoomRequest;
 import com.albert.model.Task;
 import com.albert.model.TrainingRoomRequest;
@@ -35,6 +33,8 @@ import com.albert.service.EmployeeMailSender;
 @RestController
 @RequestMapping("emp")
 public class EmployeeController {
+	@Value("${admin.email}")
+	private String adminEmail;
 	@Autowired
 	EmployeeRepo empRepo;
 	@Autowired
@@ -49,6 +49,8 @@ public class EmployeeController {
 	MeetingRoomRepo meetingRoomRepo;
 	@Autowired
 	MeetingRoomRequestRepo meetingReqRepo;
+	@Autowired
+	LeaveRequestRepo leaveRepo;
 	
 	//gets all tasks assigned to employee
 	@GetMapping("/getTasks/{empId}")
@@ -80,7 +82,7 @@ public class EmployeeController {
 		TrainingRoomRequest request = new TrainingRoomRequest(dto);
 		request.setEmpId(empRepo.findById(empId).orElseThrow(null));
 		trainingReqRepo.save(request);
-		return sender.sendingMail("anderson_ac@lynchburg.edu", "Training Room Request", "Request Id: "+ request.getRequestId() 
+		return sender.sendingMail(adminEmail, "Training Room Request", "Request Id: "+ request.getRequestId() 
 			+ "\nRoomId: " + request.getTrainingRoomId()
 				+ "\nStart Date: " + request.getStartDate() + "\nEnd Date: " + 
 				request.getEndDate() + "\nDescription: " + request.getRoomDesc());
@@ -91,12 +93,25 @@ public class EmployeeController {
 		MeetingRoomRequest request = new MeetingRoomRequest(dto);
 		request.setEmpId(empRepo.findById(empId).orElseThrow(null));
 		meetingReqRepo.save(request);
-		return sender.sendingMail("anderson_ac@lynchburg.edu", "Meeting Room Request", "Request Id: "+ request.getRequestId() 
+		return sender.sendingMail(adminEmail, "Meeting Room Request", "Request Id: "+ request.getRequestId() 
 			+ "\nRoomId: " + request.getMeetingRoomId()
 				+ "\nStart Time: " + request.getStartTime() + "\nEnd Time: "+ request.getEndTime() +
 				"\nDescription: " + request.getMeetingDesc());
 		
 	}
+	
+	@PostMapping("/leaveRequest/{empId}")
+	public String requestLeave(@RequestBody DTOLeaveRequest dto, @PathVariable Long empId) {
+		LeaveRequest request = new LeaveRequest(dto);
+		request.setEmpId(empRepo.findById(empId).orElseThrow(null));
+		leaveRepo.save(request);
+		return sender.sendingMail("anderson_ac@lynchburg.edu", "Meeting Room Request", "Request Id: "+ request.getLeaveId() 
+		+ "\nLeave Tpye: " + request.getLeaveType()
+		+ "\nStart Date: " + request.getStartDate() + "\nEnd Date: "+ request.getEndDate() +
+		"\nReason: " + request.getReason());
+		
+	}
+	
 	
 	
 }
