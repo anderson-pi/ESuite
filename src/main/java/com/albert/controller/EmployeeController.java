@@ -1,10 +1,13 @@
 package com.albert.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,15 +24,19 @@ import com.albert.dao.TaskRepo;
 import com.albert.dao.TrainingRoomRequestRepo;
 import com.albert.dao.UserLoginRepo;
 import com.albert.model.DTOLeaveRequest;
-import com.albert.model.DTOMeetingRoom;
+import com.albert.model.DTOMeetingRoomRequest;
 import com.albert.model.DTOTrainingRoomRequest;
+import com.albert.model.DTOUserLogin;
 import com.albert.model.Employee;
 import com.albert.model.LeaveRequest;
 import com.albert.model.MeetingRoomRequest;
+import com.albert.model.StringReturn;
 import com.albert.model.Task;
 import com.albert.model.TrainingRoomRequest;
+import com.albert.model.UserLogin;
 import com.albert.service.EmployeeMailSender;
 
+@CrossOrigin(origins= "http://localhost:4200")
 @RestController
 @RequestMapping("emp")
 public class EmployeeController {
@@ -54,42 +61,43 @@ public class EmployeeController {
 	
 	//gets all tasks assigned to employee
 	@GetMapping("/getTasks/{empId}")
-	public List<Task> getTasks(@PathVariable Long empId ){
+	public ArrayList<Task> getTasks(@PathVariable Long empId ){
 		Optional<Employee> tempEmp = empRepo.findById(empId);
 		return taskRepo.findByassignedTo(tempEmp);
 		
 	}
 	//sets task as complete and send confirmation
-	@PutMapping("/taskComplete/{taskId}")
-	public String setTaskComplete(@PathVariable Long taskId) {
+	@PutMapping("/taskComplete")
+	public StringReturn setTaskComplete(@RequestBody Long taskId) {
 		Task tempTask = taskRepo.findById(taskId).orElse(null);
+		
 		if(tempTask != null) {
 			tempTask.setStatus(true);
 			taskRepo.save(tempTask);
-			return sender.sendingMail(tempTask.getAssignedBy().getUserLogin().getUserName(),
+			return new StringReturn(sender.sendingMail(tempTask.getAssignedBy().getUserLogin().getUserName(),
 					"Task Modification Notification",
 					"Task Id: "+ tempTask.getTaskId() +" has been modified successfully please & revert if any changes.\n\n" +
-					"Thank you,\n" + tempTask.getAssignedTo().getFirstName());
+					"Thank you,\n" + tempTask.getAssignedTo().getFirstName()));
 			
 		}
-
-		return "Task not found";
+		
+		return new StringReturn("Task not found");
 	}
 	
 	//request a training room
 	@PostMapping("/trainingRoom/{empId}")
-	public String requestTrainingRoom(@RequestBody DTOTrainingRoomRequest dto,@PathVariable Long empId) {
+	public StringReturn requestTrainingRoom(@RequestBody DTOTrainingRoomRequest dto,@PathVariable Long empId) {
 		TrainingRoomRequest request = new TrainingRoomRequest(dto);
 		request.setEmpId(empRepo.findById(empId).orElseThrow(null));
 		trainingReqRepo.save(request);
-		return sender.sendingMail(adminEmail, "Training Room Request", "Request Id: "+ request.getRequestId() 
+		return new StringReturn(sender.sendingMail(adminEmail, "Training Room Request", "Request Id: "+ request.getRequestId() 
 			+ "\nRoomId: " + request.getTrainingRoomId()
 				+ "\nStart Date: " + request.getStartDate() + "\nEnd Date: " + 
-				request.getEndDate() + "\nDescription: " + request.getRoomDesc());
+				request.getEndDate() + "\nDescription: " + request.getRoomDesc()));
 		
 	}
 	@PostMapping("/meetingRoom/{empId}")
-	public String requestMeetingRoom(@RequestBody DTOMeetingRoom dto,@PathVariable Long empId) {
+	public String requestMeetingRoom(@RequestBody DTOMeetingRoomRequest dto,@PathVariable Long empId) {
 		MeetingRoomRequest request = new MeetingRoomRequest(dto);
 		request.setEmpId(empRepo.findById(empId).orElseThrow(null));
 		meetingReqRepo.save(request);
@@ -101,17 +109,29 @@ public class EmployeeController {
 	}
 	
 	@PostMapping("/leaveRequest/{empId}")
-	public String requestLeave(@RequestBody DTOLeaveRequest dto, @PathVariable Long empId) {
+	public StringReturn requestLeave(@RequestBody DTOLeaveRequest dto, @PathVariable Long empId) {
 		LeaveRequest request = new LeaveRequest(dto);
 		request.setEmpId(empRepo.findById(empId).orElseThrow(null));
 		leaveRepo.save(request);
-		return sender.sendingMail("anderson_ac@lynchburg.edu", "Meeting Room Request", "Request Id: "+ request.getLeaveId() 
+		return new StringReturn(sender.sendingMail(adminEmail, "Leave Request", "Request Id: "+ request.getLeaveId() 
 		+ "\nLeave Tpye: " + request.getLeaveType()
 		+ "\nStart Date: " + request.getStartDate() + "\nEnd Date: "+ request.getEndDate() +
-		"\nReason: " + request.getReason());
+		"\nReason: " + request.getReason()));
 		
 	}
 	
+	@GetMapping("/viewRequests/{empId}")
+	public List<LeaveRequest> viewLeaveRequest(@PathVariable Long empId) {
+		return leaveRepo.findByEmpId(empRepo.findById(empId));
+		
+	}
+	@GetMapping("/findUsersId/{user}")
+	public Employee findUsersID(@PathVariable String user){
+		UserLogin tempUser= userRepo.findByuserName(user);
+		Employee tempEmp = empRepo.findByuserLogin(tempUser);
+		return tempEmp;
+		
+	}
 	
 	
 }

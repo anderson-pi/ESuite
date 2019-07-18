@@ -23,7 +23,7 @@ public class MeetingRoomRequest {
 	
 	public MeetingRoomRequest() {}
 	
-	public MeetingRoomRequest(DTOMeetingRoom dto) {
+	public MeetingRoomRequest(DTOMeetingRoomRequest dto) {
 		this.MeetingRoomId = dto.getRoomId();
 		this.startTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getStartTime()+":00");
 		this.endTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getEndTime()+":00");

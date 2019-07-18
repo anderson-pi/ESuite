@@ -1,7 +1,7 @@
 package com.albert.model;
 
 
-public class DTOMeetingRoom {
+public class DTOMeetingRoomRequest {
 	private Long roomId;
 	private String day;
 	private String startTime;

@@ -21,7 +21,7 @@ import com.albert.service.JwtUserDetailsService;
 import com.albert.service.EmployeeMailSender;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins= "http://localhost:4200")
 public class JwtController {
 	@Autowired
 	private AuthenticationManager authenticationManager;

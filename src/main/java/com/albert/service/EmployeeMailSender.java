@@ -30,7 +30,7 @@ public class EmployeeMailSender {
 			return "Exceptin while sending mail..";
 		}
 		sender.send(msg);
-		return "Mail set successfully!!";
+		return "Mail sent successfully!!";
 	}
 	
 

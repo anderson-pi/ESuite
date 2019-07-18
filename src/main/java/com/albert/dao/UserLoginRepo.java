@@ -7,7 +7,6 @@ import com.albert.model.UserLogin;
 
 @Repository
 public interface UserLoginRepo extends CrudRepository<UserLogin,Long>{
-	UserLogin findByuserNameAndPassWord(String eMail, String passWord);
 	UserLogin findByuserName(String eMail);
 
 }

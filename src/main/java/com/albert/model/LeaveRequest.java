@@ -10,16 +10,19 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class LeaveRequest {
-	@Id @GeneratedValue(strategy=GenerationType.SEQUENCE)
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long leaveId;
 	private String leaveType;
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private String reason;
+	private boolean statue = false;
 	@OneToOne
 	private Employee empId;
-	
-	public LeaveRequest(){}
+
+	public LeaveRequest() {
+	}
 
 	public LeaveRequest(String leaveType, LocalDate startDate, LocalDate endDate, String reason) {
 		super();
@@ -28,6 +31,7 @@ public class LeaveRequest {
 		this.endDate = endDate;
 		this.reason = reason;
 	}
+
 	public LeaveRequest(DTOLeaveRequest dto) {
 		super();
 		this.leaveType = dto.getLeaveType();
@@ -79,7 +83,14 @@ public class LeaveRequest {
 	public void setEmpId(Employee empId) {
 		this.empId = empId;
 	}
-	
+
+	public boolean isStatue() {
+		return statue;
+	}
+
+	public void setStatue(boolean statue) {
+		this.statue = statue;
+	}
 	
 
 }

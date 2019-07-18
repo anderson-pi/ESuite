@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.albert.dao.DeptRepo;
-import com.albert.dao.EmployeeLeavesRepo;
 import com.albert.dao.EmployeeRepo;
 import com.albert.dao.LeaveRequestRepo;
 import com.albert.dao.MeetingRoomRepo;
@@ -29,7 +29,6 @@ import com.albert.dao.TrainingRoomRequestRepo;
 import com.albert.dao.UserLoginRepo;
 import com.albert.model.Department;
 import com.albert.model.Employee;
-import com.albert.model.EmployeeLeaves;
 import com.albert.model.LeaveRequest;
 import com.albert.model.MeetingRoom;
 import com.albert.model.MeetingRoomRequest;
@@ -37,7 +36,7 @@ import com.albert.service.EmployeeMailSender;
 import com.albert.model.Task;
 import com.albert.model.TrainingRoom;
 import com.albert.model.TrainingRoomRequest;
-
+@CrossOrigin(origins= "http://localhost:4200")
 @RestController
 @RequestMapping("admin")
 public class AdminRestController {
@@ -62,8 +61,6 @@ public class AdminRestController {
 	MeetingRoomRequestRepo meetingReqRepo;
 	@Autowired
 	LeaveRequestRepo leaveReqRepo;
-	@Autowired
-	EmployeeLeavesRepo empLeavesRepo;
 
 	// get all employees
 	@GetMapping("/emps")
@@ -143,6 +140,7 @@ public class AdminRestController {
 		Employee e = empRepo.findById(id).orElse(null);
 		if (e != null) {
 			emp.setEmpId(e.getEmpId());
+			emp.setUserLogin(e.getUserLogin());
 			emp.setDept(e.getDept());
 			return empRepo.save(emp);
 		}
@@ -262,19 +260,20 @@ public class AdminRestController {
 		
 		return leaveReqRepo.findAll();
 	}
-	@PostMapping("acceptLeave/{requestId}")
+	@PutMapping("acceptLeave/{requestId}")
 	public String acceptLeaveRequest(@PathVariable Long requestId) {
-		EmployeeLeaves acceptedRequest = new EmployeeLeaves(leaveReqRepo.findById(requestId).orElseThrow(null));
-		empLeavesRepo.save(acceptedRequest);
+		LeaveRequest acceptedRequest = leaveReqRepo.findById(requestId).orElseThrow(null);
+		acceptedRequest.setStatue(true);
+		leaveReqRepo.save(acceptedRequest);
 
 		return sender.sendingMail(acceptedRequest.getEmpId().getUserLogin().getUserName(), "Leave Request Notification", "Request Id: " + acceptedRequest.getLeaveId()
 		+ "\n Start Date: " + acceptedRequest.getStartDate() 
 		+ "\nEnd Date: " + acceptedRequest.getEndDate() + "\nThis request has been approved!\n\nThank you,\nAdmin");
 		
 	}
-	@PostMapping("denyLeave/{requestId}")
+	@PutMapping("denyLeave/{requestId}")
 	public String denyLeaveRequest(@PathVariable Long requestId) {
-		EmployeeLeaves deniedRequest = new EmployeeLeaves(leaveReqRepo.findById(requestId).orElseThrow(null));
+		LeaveRequest deniedRequest = leaveReqRepo.findById(requestId).orElseThrow(null);
 		leaveReqRepo.deleteById(requestId);
 
 		return sender.sendingMail(deniedRequest.getEmpId().getUserLogin().getUserName(), "Leave Request Notification", "Request Id: " + deniedRequest.getLeaveId()
