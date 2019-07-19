@@ -97,14 +97,14 @@ public class EmployeeController {
 		
 	}
 	@PostMapping("/meetingRoom/{empId}")
-	public String requestMeetingRoom(@RequestBody DTOMeetingRoomRequest dto,@PathVariable Long empId) {
+	public StringReturn requestMeetingRoom(@RequestBody DTOMeetingRoomRequest dto,@PathVariable Long empId) {
 		MeetingRoomRequest request = new MeetingRoomRequest(dto);
 		request.setEmpId(empRepo.findById(empId).orElseThrow(null));
 		meetingReqRepo.save(request);
-		return sender.sendingMail(adminEmail, "Meeting Room Request", "Request Id: "+ request.getRequestId() 
+		return new StringReturn(sender.sendingMail(adminEmail, "Meeting Room Request", "Request Id: "+ request.getRequestId() 
 			+ "\nRoomId: " + request.getMeetingRoomId()
 				+ "\nStart Time: " + request.getStartTime() + "\nEnd Time: "+ request.getEndTime() +
-				"\nDescription: " + request.getMeetingDesc());
+				"\nDescription: " + request.getMeetingDesc()));
 		
 	}
 	
@@ -132,6 +132,13 @@ public class EmployeeController {
 		return tempEmp;
 		
 	}
+	
+	@GetMapping("/findUsersRole/{user}")
+	public StringReturn findUsersRole(@PathVariable String user){
+		UserLogin tempUser= userRepo.findByuserName(user);
+		return new StringReturn(tempUser.getRole());
+	}
+	
 	
 	
 }

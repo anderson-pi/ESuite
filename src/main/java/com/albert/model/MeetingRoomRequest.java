@@ -17,6 +17,7 @@ public class MeetingRoomRequest {
 	private Timestamp startTime;
 	private Timestamp endTime;
 	private String meetingDesc;
+	private boolean status;
 	@OneToOne
 	@JoinColumn(name="emp_id")
 	private Employee empId;
@@ -25,8 +26,8 @@ public class MeetingRoomRequest {
 	
 	public MeetingRoomRequest(DTOMeetingRoomRequest dto) {
 		this.MeetingRoomId = dto.getRoomId();
-		this.startTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getStartTime()+":00");
-		this.endTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getEndTime()+":00");
+		this.startTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getStartTime());
+		this.endTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getEndTime());
 		this.meetingDesc=dto.getMeetingDesc();
 	}
 
@@ -73,6 +74,14 @@ public class MeetingRoomRequest {
 
 	public void setMeetingRoomId(Long meetingRoomId) {
 		MeetingRoomId = meetingRoomId;
+	}
+
+	public boolean isStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
 	}
 	
 

@@ -2,6 +2,7 @@ package com.albert.controller;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -216,15 +217,17 @@ public class AdminRestController {
 		MeetingRoom tempRoom = meetingRoomRepo.findById(tempRequest.getMeetingRoomId()).orElseThrow(null);
 		
 		LocalTime timeStart = tempRequest.getStartTime().toLocalDateTime().toLocalTime();
+		LocalTime timeEnd = tempRequest.getEndTime().toLocalDateTime().toLocalTime();
 		LocalDate date = tempRequest.getStartTime().toLocalDateTime().toLocalDate();
 		
-		int stHour= tempRequest.getStartTime().getHours();
-		int edHour= tempRequest.getEndTime().getHours();
-		int index = Math.abs(stHour - edHour);
 		Set<LocalTime> time = tempRoom.getReserved().getOrDefault(date, new HashSet<>());
+		long diff = ChronoUnit.MINUTES.between(timeStart, timeEnd);
+		int nbSlots = Math.abs((int)(diff/30));
 		
-		for(int i=0; i<index+1; i++) {
-			time.add(timeStart.plusHours(i));
+		int  inc = 0;
+		for(int i=0; i<=nbSlots; i++) {
+			time.add(timeStart.plusMinutes(inc));
+			inc +=30;
 		}
 		tempRoom.getReserved().put(date, time);
 		meetingRoomRepo.save(tempRoom);

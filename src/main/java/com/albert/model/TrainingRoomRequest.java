@@ -17,6 +17,7 @@ public class TrainingRoomRequest {
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private String roomDesc;
+	private boolean status;
 	@OneToOne()
 	@JoinColumn(name="emp_id")
 	private Employee empId;
@@ -65,6 +66,14 @@ public class TrainingRoomRequest {
 
 	public void setEmpId(Employee empId) {
 		this.empId = empId;
+	}
+
+	public boolean isStatus() {
+		return status;
+	}
+
+	public void setStatus(boolean status) {
+		this.status = status;
 	}
 	
 	
