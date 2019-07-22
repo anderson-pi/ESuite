@@ -19,6 +19,7 @@ import com.albert.model.Employee;
 import com.albert.model.LeaveRequest;
 import com.albert.model.MeetingRoom;
 import com.albert.model.MeetingRoomRequest;
+import com.albert.model.StringReturn;
 import com.albert.service.AdminService;
 import com.albert.model.Task;
 import com.albert.model.TrainingRoom;
@@ -44,20 +45,9 @@ public class AdminRestController {
 		return adminService.getAllDpt();
 	}
 
-	// get all employees in specified department
-	@GetMapping("/dept/emps/{dept}")
-	public List<Employee> getFromDpt(@PathVariable("dept") String dept) {
-		return adminService.getFromDpt(dept);
-	}
-
-	// get name of department a employee is in
-	@GetMapping("/emp/dept/{id}")
-	public String getFromDpt(@PathVariable("id") Long id) {
-		return adminService.getFromDpt(id);
-	}
 
 	// get all employees with specified lastName
-	@GetMapping("emps/{lname}")
+	@GetMapping("/emps/{lname}")
 	public List<Employee> getByLastName(@PathVariable("lname") String lname) {
 		return adminService.getByLastName(lname);
 	}
@@ -71,6 +61,7 @@ public class AdminRestController {
 	// create a department
 	@PostMapping("/dept/create")
 	public Department createDpt(@RequestBody Department dept) {
+		System.out.println("here");
 		return adminService.createDpt(dept);
 	}
 	
@@ -94,23 +85,23 @@ public class AdminRestController {
 
 	// Delete department by id
 	@DeleteMapping("/dept/{id}")
-	public String deleteByDeptId(@PathVariable Long id) {
+	public StringReturn deleteByDeptId(@PathVariable Long id) {
 		return adminService.deleteByDeptId(id);
 	}
 
 	// Delete employee by id
 	@DeleteMapping("/emp/{id}")
-	public String deleteByEmpId(@PathVariable Long id) {
+	public StringReturn deleteByEmpId(@PathVariable Long id) {
 		return adminService.deleteByEmpId(id);
 	}
 	
 	//Deny training room request
 	@DeleteMapping("denyTrainingRoom/{requestId}")
-	public String denyTrainingRoomRequest(@PathVariable Long requestId) {
+	public StringReturn denyTrainingRoomRequest(@PathVariable Long requestId) {
 		return adminService.denyTrainingRoomRequest(requestId);
 	}
 	@PutMapping("acceptTrainingRoom/{requestId}")
-	public String acceptTrainingRoomRequest(@PathVariable Long requestId) {
+	public StringReturn acceptTrainingRoomRequest(@PathVariable Long requestId) {
 		return adminService.acceptTrainingRoomRequest(requestId);
 	}
 	@PostMapping("/createTrainingRoom")
@@ -122,11 +113,11 @@ public class AdminRestController {
 		return adminService.createMeetingRoom(mRoom);
 	}
 	@DeleteMapping("denyMeetingRoom/{requestId}")
-	public String denyMeetingRoomRequest(@PathVariable Long requestId) {
+	public StringReturn denyMeetingRoomRequest(@PathVariable Long requestId) {
 		return adminService.denyMeetingRoomRequest(requestId);
 	}
 	@PutMapping("/acceptMeetingRoom/{requestId}")
-	public String acceptMeetingRoomRequest(@PathVariable Long requestId) {
+	public StringReturn acceptMeetingRoomRequest(@PathVariable Long requestId) {
 		return adminService.acceptMeetingRoomRequest(requestId);
 	}
 	@GetMapping("/viewMeetings")
@@ -155,11 +146,11 @@ public class AdminRestController {
 		return adminService.viewLeaveRequest();
 	}
 	@PutMapping("acceptLeave/{requestId}")
-	public String acceptLeaveRequest(@PathVariable Long requestId) {
+	public StringReturn acceptLeaveRequest(@PathVariable Long requestId) {
 		return adminService.acceptLeaveRequest(requestId);
 	}
-	@PutMapping("denyLeave/{requestId}")
-	public String denyLeaveRequest(@PathVariable Long requestId) {
+	@DeleteMapping("denyLeave/{requestId}")
+	public StringReturn denyLeaveRequest(@PathVariable Long requestId) {
 		return adminService.denyLeaveRequest(requestId);
 	}
 

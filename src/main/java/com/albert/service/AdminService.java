@@ -25,6 +25,7 @@ import com.albert.model.Employee;
 import com.albert.model.LeaveRequest;
 import com.albert.model.MeetingRoom;
 import com.albert.model.MeetingRoomRequest;
+import com.albert.model.StringReturn;
 import com.albert.service.EmployeeMailSender;
 import com.albert.model.Task;
 import com.albert.model.TrainingRoom;
@@ -65,17 +66,6 @@ public class AdminService {
 
 	public Iterable<Department> getAllDpt() {
 		return deptRepo.findAll();
-	}
-
-	// get all employees in specified department
-	public List<Employee> getFromDpt(String dept) {
-		return empRepo.findBydept(dept);
-	}
-
-	// get name of department a employee is in
-
-	public String getFromDpt(Long id) {
-		return empRepo.findById(id).orElse(null).getDept().getDeptName();
 	}
 
 	// get all employees with specified lastName
@@ -146,31 +136,31 @@ public class AdminService {
 
 	// Delete department by id
 
-	public String deleteByDeptId(Long id) {
+	public StringReturn deleteByDeptId(Long id) {
 		deptRepo.deleteById(id);
-		return ("Deleted Department ID: " + id);
+		return new StringReturn("Deleted Department ID: " + id);
 	}
 
 	// Delete employee by id
 
-	public String deleteByEmpId(Long id) {
+	public StringReturn deleteByEmpId(Long id) {
 		empRepo.deleteById(id);
-		return ("Deleted Employee ID: " + id);
+		return new StringReturn("Deleted Employee ID: " + id);
 	}
 
 	// Deny training room request
 
-	public String denyTrainingRoomRequest(Long requestId) {
+	public StringReturn denyTrainingRoomRequest(Long requestId) {
 		TrainingRoomRequest tempRequest = trainReqRepo.findById(requestId).orElse(null);
 		trainReqRepo.deleteById(requestId);
 		sender.sendingMail(tempRequest.getEmpId().getUserLogin().getUserName(), "Training Room Request Notification",
 				"Request Id: " + tempRequest.getRequestId() + "\nDescription: " + tempRequest.getRoomDesc()
 						+ "\n Start Date: " + tempRequest.getStartDate() + "\nEnd Date: " + tempRequest.getEndDate()
 						+ "\nThis request has been denied!\n\nThank you,\nAdmin");
-		return ("Denied training room request: " + requestId);
+		return new StringReturn("Denied training room request: " + requestId);
 	}
 
-	public String acceptTrainingRoomRequest(Long requestId) {
+	public StringReturn acceptTrainingRoomRequest(Long requestId) {
 		TrainingRoomRequest tempRequest = trainReqRepo.findById(requestId).orElse(null);
 		TrainingRoom tempRoom = trainingRoomRepo.findById(tempRequest.getTrainingRoomId()).orElseThrow(null);
 		LocalDate tempDate = tempRequest.getStartDate();
@@ -179,11 +169,11 @@ public class AdminService {
 			tempDate = tempDate.plusDays(1);
 		}
 		trainingRoomRepo.save(tempRoom);
-		return sender.sendingMail(tempRequest.getEmpId().getUserLogin().getUserName(),
+		return new StringReturn(sender.sendingMail(tempRequest.getEmpId().getUserLogin().getUserName(),
 				"Training Room Request Notification",
 				"Request Id: " + tempRequest.getRequestId() + "\nDescription: " + tempRequest.getRoomDesc()
 						+ "\n Start Date: " + tempRequest.getStartDate() + "\nEnd Date: " + tempRequest.getEndDate()
-						+ "\nThis request has been approved!\n\nThank you,\nAdmin");
+						+ "\nThis request has been approved!\n\nThank you,\nAdmin"));
 
 	}
 
@@ -195,17 +185,17 @@ public class AdminService {
 		return meetingRoomRepo.save(mRoom);
 	}
 
-	public String denyMeetingRoomRequest(Long requestId) {
+	public StringReturn denyMeetingRoomRequest(Long requestId) {
 		MeetingRoomRequest tempRequest = meetingReqRepo.findById(requestId).orElse(null);
 		meetingReqRepo.deleteById(requestId);
 		sender.sendingMail(tempRequest.getEmpId().getUserLogin().getUserName(), "Training Room Request Notification",
 				"Request Id: " + tempRequest.getRequestId() + "\nDescription: " + tempRequest.getMeetingDesc()
 						+ "\nStart Time: " + tempRequest.getStartTime() + "\nEnd Time: " + tempRequest.getEndTime()
 						+ "\nThis request has been denied!\n\nThank you,\nAdmin");
-		return ("Denied meeting room request: " + requestId);
+		return new StringReturn("Denied meeting room request: " + requestId);
 	}
 
-	public String acceptMeetingRoomRequest(Long requestId) {
+	public StringReturn acceptMeetingRoomRequest(Long requestId) {
 		MeetingRoomRequest tempRequest = meetingReqRepo.findById(requestId).orElse(null);
 		MeetingRoom tempRoom = meetingRoomRepo.findById(tempRequest.getMeetingRoomId()).orElseThrow(null);
 
@@ -224,11 +214,11 @@ public class AdminService {
 		}
 		tempRoom.getReserved().put(date, time);
 		meetingRoomRepo.save(tempRoom);
-		return sender.sendingMail(tempRequest.getEmpId().getUserLogin().getUserName(),
+		return new StringReturn(sender.sendingMail(tempRequest.getEmpId().getUserLogin().getUserName(),
 				"Meeting Room Request Notification",
 				"Request Id: " + tempRequest.getRequestId() + "\nDescription: " + tempRequest.getMeetingDesc()
 						+ "\n Start Date: " + tempRequest.getStartTime() + "\nEnd Date: " + tempRequest.getEndTime()
-						+ "\nThis request has been approved!\n\nThank you,\nAdmin");
+						+ "\nThis request has been approved!\n\nThank you,\nAdmin"));
 
 	}
 
@@ -257,26 +247,26 @@ public class AdminService {
 		return leaveReqRepo.findAll();
 	}
 
-	public String acceptLeaveRequest(Long requestId) {
+	public StringReturn acceptLeaveRequest(Long requestId) {
 		LeaveRequest acceptedRequest = leaveReqRepo.findById(requestId).orElseThrow(null);
 		acceptedRequest.setStatue(true);
 		leaveReqRepo.save(acceptedRequest);
 
-		return sender.sendingMail(acceptedRequest.getEmpId().getUserLogin().getUserName(), "Leave Request Notification",
+		return new StringReturn(sender.sendingMail(acceptedRequest.getEmpId().getUserLogin().getUserName(), "Leave Request Notification",
 				"Request Id: " + acceptedRequest.getLeaveId() + "\n Start Date: " + acceptedRequest.getStartDate()
 						+ "\nEnd Date: " + acceptedRequest.getEndDate()
-						+ "\nThis request has been approved!\n\nThank you,\nAdmin");
+						+ "\nThis request has been approved!\n\nThank you,\nAdmin"));
 
 	}
 
-	public String denyLeaveRequest(Long requestId) {
+	public StringReturn denyLeaveRequest(Long requestId) {
 		LeaveRequest deniedRequest = leaveReqRepo.findById(requestId).orElseThrow(null);
 		leaveReqRepo.deleteById(requestId);
 
-		return sender.sendingMail(deniedRequest.getEmpId().getUserLogin().getUserName(), "Leave Request Notification",
+		return new StringReturn(sender.sendingMail(deniedRequest.getEmpId().getUserLogin().getUserName(), "Leave Request Notification",
 				"Request Id: " + deniedRequest.getLeaveId() + "\n Start Date: " + deniedRequest.getStartDate()
 						+ "\nEnd Date: " + deniedRequest.getEndDate()
-						+ "\nThis request has been approved!\n\nThank you,\nAdmin");
+						+ "\nThis request has been approved!\n\nThank you,\nAdmin"));
 
 	}
 
