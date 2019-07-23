@@ -37,9 +37,9 @@ public class JwtUserDetailsService implements UserDetailsService {
 				new ArrayList<>());
 	}
 
-	public Employee save(DTOUserLogin user) {
-		Employee tempEmp = empRepo.findById(user.getId()).orElse(null);
-		if (tempEmp != null) {
+	public Employee save(DTOUserLogin user, Long id) {
+		Employee tempEmp = empRepo.findById(id).orElse(null);
+		if (tempEmp != null && tempEmp.getUserLogin() == null) {
 			UserLogin newUser = new UserLogin();
 			newUser.setUserName(user.getUserName());
 			newUser.setPassWord(bcryptEncoder.encode(user.getPassWord()));

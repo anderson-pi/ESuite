@@ -162,12 +162,14 @@ public class AdminService {
 
 	public StringReturn acceptTrainingRoomRequest(Long requestId) {
 		TrainingRoomRequest tempRequest = trainReqRepo.findById(requestId).orElse(null);
+		tempRequest.setStatus(true);
 		TrainingRoom tempRoom = trainingRoomRepo.findById(tempRequest.getTrainingRoomId()).orElseThrow(null);
 		LocalDate tempDate = tempRequest.getStartDate();
 		while (!tempDate.equals(tempRequest.getEndDate().plusDays(1))) {
 			tempRoom.getReservedDates().add(tempDate);
 			tempDate = tempDate.plusDays(1);
 		}
+		trainReqRepo.save(tempRequest);
 		trainingRoomRepo.save(tempRoom);
 		return new StringReturn(sender.sendingMail(tempRequest.getEmpId().getUserLogin().getUserName(),
 				"Training Room Request Notification",
@@ -198,7 +200,8 @@ public class AdminService {
 	public StringReturn acceptMeetingRoomRequest(Long requestId) {
 		MeetingRoomRequest tempRequest = meetingReqRepo.findById(requestId).orElse(null);
 		MeetingRoom tempRoom = meetingRoomRepo.findById(tempRequest.getMeetingRoomId()).orElseThrow(null);
-
+		tempRequest.setStatus(true);
+		
 		LocalTime timeStart = tempRequest.getStartTime().toLocalDateTime().toLocalTime();
 		LocalTime timeEnd = tempRequest.getEndTime().toLocalDateTime().toLocalTime();
 		LocalDate date = tempRequest.getStartTime().toLocalDateTime().toLocalDate();
@@ -214,6 +217,7 @@ public class AdminService {
 		}
 		tempRoom.getReserved().put(date, time);
 		meetingRoomRepo.save(tempRoom);
+		meetingReqRepo.save(tempRequest);
 		return new StringReturn(sender.sendingMail(tempRequest.getEmpId().getUserLogin().getUserName(),
 				"Meeting Room Request Notification",
 				"Request Id: " + tempRequest.getRequestId() + "\nDescription: " + tempRequest.getMeetingDesc()

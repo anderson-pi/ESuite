@@ -8,6 +8,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,9 +44,9 @@ public class JwtController {
 		return (ResponseEntity<?>) ResponseEntity.badRequest();
 	}
 	
-	@PostMapping("/register")
-	public ResponseEntity<?> regEmpJwt(@RequestBody DTOUserLogin authenticationRequest) throws Exception {
-		Employee emp = userDetailsService.save(authenticationRequest);
+	@PostMapping("/register/{id}")
+	public ResponseEntity<?> regEmpJwt(@RequestBody DTOUserLogin authenticationRequest, @PathVariable Long id) throws Exception {
+		Employee emp = userDetailsService.save(authenticationRequest, id);
 		return ResponseEntity.ok(send.sendingMail(emp.getUserLogin().getUserName(),"Welcome on-Board " + emp.getFirstName().toUpperCase() + " " +
 				emp.getLastName().toUpperCase(),"Welcome to on-Board into E-office Corp.\n" + 
 						"Welcome " + emp.getFirstName().toUpperCase() +", your details as below:\n\n" +
