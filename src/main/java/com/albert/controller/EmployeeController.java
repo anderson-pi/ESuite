@@ -24,6 +24,9 @@ import com.albert.model.StringReturn;
 import com.albert.model.Task;
 import com.albert.model.TrainingRoomRequest;
 import com.albert.service.EmployeeService;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 @CrossOrigin(origins= "http://localhost:4200")
 @RestController
@@ -32,6 +35,10 @@ public class EmployeeController {
 	@Autowired
 	EmployeeService empService;
 	
+	@GetMapping("/weather")
+	public HttpResponse<JsonNode> getWeather() throws UnirestException {
+		return empService.getWeather();
+	}
 	
 	//gets all tasks assigned to employee
 	@GetMapping("/getTasks/{empId}")

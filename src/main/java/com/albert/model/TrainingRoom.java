@@ -18,8 +18,8 @@ public class TrainingRoom {
 	private String roomName;
 	private Long roomCapacity;
 	private int floorNb;
-	private boolean isProjector;
-	private boolean isWhiteboard;
+	private boolean projector;
+	private boolean whiteboard;
 	@ElementCollection(targetClass=LocalDate.class)
 	Set<LocalDate> reservedDates = new HashSet<>();
 	
@@ -52,20 +52,20 @@ public class TrainingRoom {
 		this.floorNb = floorNb;
 	}
 
-	public boolean isProjector() {
-		return isProjector;
+	public boolean getProjector() {
+		return projector;
 	}
 
-	public void setProjector(boolean isProjector) {
-		this.isProjector = isProjector;
+	public void setProjector(boolean projector) {
+		this.projector = projector;
 	}
 
-	public boolean isWhiteboard() {
-		return isWhiteboard;
+	public boolean getWhiteboard() {
+		return whiteboard;
 	}
 
-	public void setWhiteboard(boolean isWhiteboard) {
-		this.isWhiteboard = isWhiteboard;
+	public void setWhiteboard(boolean whiteboard) {
+		this.whiteboard = whiteboard;
 	}
 
 	public Set<LocalDate> getReservedDates() {

@@ -20,7 +20,7 @@ public class MeetingRoom {
 	private Long capicity;
 	private int floor;
 	@ElementCollection(targetClass=HashMap.class)
-	Map<LocalDate,Set<LocalTime>> reserved = new HashMap<>();
+	Map<LocalDate,Set<String>> reserved = new HashMap<>();
 	
 	public MeetingRoom() {}
 	
@@ -52,7 +52,7 @@ public class MeetingRoom {
 		this.floor = floor;
 	}
 
-	public Map<LocalDate, Set<LocalTime>> getReserved() {
+	public Map<LocalDate, Set<String>> getReserved() {
 		return reserved;
 	}
 

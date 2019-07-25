@@ -14,8 +14,8 @@ public class MeetingRoomRequest {
 	@Id @GeneratedValue(strategy=GenerationType.SEQUENCE)
 	private Long requestId;
 	private Long MeetingRoomId;
-	private Timestamp startTime;
-	private Timestamp endTime;
+	private String startTime;
+	private String endTime;
 	private String meetingDesc;
 	private boolean status;
 	@OneToOne
@@ -26,25 +26,26 @@ public class MeetingRoomRequest {
 	
 	public MeetingRoomRequest(DTOMeetingRoomRequest dto) {
 		this.MeetingRoomId = dto.getRoomId();
-		this.startTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getStartTime());
-		this.endTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getEndTime());
+		this.startTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getStartTime()).toString();
+		this.endTime = Timestamp.valueOf(dto.getDay() +" "+ dto.getEndTime()).toString();
 		this.meetingDesc=dto.getMeetingDesc();
+		
 	}
 
 
-	public Timestamp getStartTime() {
+	public String getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(Timestamp startTime) {
+	public void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
 
-	public Timestamp getEndTime() {
+	public String getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(Timestamp endTime) {
+	public void setEndTime(String endTime) {
 		this.endTime = endTime;
 	}
 

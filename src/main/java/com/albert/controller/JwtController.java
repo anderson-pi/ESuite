@@ -18,6 +18,7 @@ import com.albert.model.DTOUserLogin;
 import com.albert.model.Employee;
 import com.albert.model.JwtRequest;
 import com.albert.model.JwtResponse;
+import com.albert.model.StringReturn;
 import com.albert.service.JwtUserDetailsService;
 import com.albert.service.EmployeeMailSender;
 
@@ -45,9 +46,9 @@ public class JwtController {
 	}
 	
 	@PostMapping("/register/{id}")
-	public ResponseEntity<?> regEmpJwt(@RequestBody DTOUserLogin authenticationRequest, @PathVariable Long id) throws Exception {
+	public StringReturn regEmpJwt(@RequestBody DTOUserLogin authenticationRequest, @PathVariable Long id) throws Exception {
 		Employee emp = userDetailsService.save(authenticationRequest, id);
-		return ResponseEntity.ok(send.sendingMail(emp.getUserLogin().getUserName(),"Welcome on-Board " + emp.getFirstName().toUpperCase() + " " +
+		return new StringReturn(send.sendingMail(emp.getUserLogin().getUserName(),"Welcome on-Board " + emp.getFirstName().toUpperCase() + " " +
 				emp.getLastName().toUpperCase(),"Welcome to on-Board into E-office Corp.\n" + 
 						"Welcome " + emp.getFirstName().toUpperCase() +", your details as below:\n\n" +
 						"EmpId: " + emp.getEmpId() +"\n"+

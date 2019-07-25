@@ -1,5 +1,6 @@
 package com.albert.service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -201,18 +202,19 @@ public class AdminService {
 		MeetingRoomRequest tempRequest = meetingReqRepo.findById(requestId).orElse(null);
 		MeetingRoom tempRoom = meetingRoomRepo.findById(tempRequest.getMeetingRoomId()).orElseThrow(null);
 		tempRequest.setStatus(true);
-		
-		LocalTime timeStart = tempRequest.getStartTime().toLocalDateTime().toLocalTime();
-		LocalTime timeEnd = tempRequest.getEndTime().toLocalDateTime().toLocalTime();
-		LocalDate date = tempRequest.getStartTime().toLocalDateTime().toLocalDate();
 
-		Set<LocalTime> time = tempRoom.getReserved().getOrDefault(date, new HashSet<>());
+		LocalTime timeStart = Timestamp.valueOf(tempRequest.getStartTime()).toLocalDateTime().toLocalTime();
+		LocalTime timeEnd = Timestamp.valueOf(tempRequest.getEndTime()).toLocalDateTime().toLocalTime();
+		LocalDate date = Timestamp.valueOf(tempRequest.getStartTime()).toLocalDateTime().toLocalDate();
+		
+		
+		Set<String> time = tempRoom.getReserved().getOrDefault(date, new HashSet<>());
 		long diff = ChronoUnit.MINUTES.between(timeStart, timeEnd);
 		int nbSlots = Math.abs((int) (diff / 30));
 
 		int inc = 0;
 		for (int i = 0; i <= nbSlots; i++) {
-			time.add(timeStart.plusMinutes(inc));
+			time.add(timeStart.plusMinutes(inc).toString());
 			inc += 30;
 		}
 		tempRoom.getReserved().put(date, time);
@@ -270,7 +272,7 @@ public class AdminService {
 		return new StringReturn(sender.sendingMail(deniedRequest.getEmpId().getUserLogin().getUserName(), "Leave Request Notification",
 				"Request Id: " + deniedRequest.getLeaveId() + "\n Start Date: " + deniedRequest.getStartDate()
 						+ "\nEnd Date: " + deniedRequest.getEndDate()
-						+ "\nThis request has been approved!\n\nThank you,\nAdmin"));
+						+ "\nThis request has been denied!\n\nThank you,\nAdmin"));
 
 	}
 
