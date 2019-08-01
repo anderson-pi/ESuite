@@ -32,13 +32,14 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 @RestController
 @RequestMapping("emp")
 public class EmployeeController {
+
 	@Autowired
 	EmployeeService empService;
 	
-	@GetMapping("/weather")
-	public HttpResponse<JsonNode> getWeather() throws UnirestException {
-		return empService.getWeather();
-	}
+//	@GetMapping("/weather")
+//	public HttpResponse<JsonNode> getWeather() throws UnirestException {
+//		return empService.getWeather();
+//	}
 	
 	//gets all tasks assigned to employee
 	@GetMapping("/getTasks/{empId}")

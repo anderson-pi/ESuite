@@ -140,13 +140,6 @@ public class EmployeeService {
 		UserLogin tempUser = userRepo.findByuserName(user);
 		return new StringReturn(tempUser.getRole());
 	}
-	
-	public HttpResponse<JsonNode> getWeather() throws UnirestException {
-		
-			return Unirest.get("https://community-open-weather-map.p.rapidapi.com/weather?callback=test&id=2172797&units=%22metric%22+or+%22imperial%22&mode=xml%2C+html&q=London%2Cuk")
-				.header("X-RapidAPI-Host", "community-open-weather-map.p.rapidapi.com")
-				.header("X-RapidAPI-Key", "e4d850646bmsh72f9f81e22a65dcp10bf48jsn9cfb04766562")
-				.asJson();
-	}
+
 
 }
